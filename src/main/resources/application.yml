@@ -1,0 +1,23 @@
+server:
+  port: 10008 # 网关端口
+spring:
+  application:
+    name: cloudnote-gateway # 服务名称
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.150.128:8848 # nacos地址
+    gateway:
+      discovery:
+        locator:
+          # enabled：默认为false，设置为true表明spring cloud gateway开启服务发现和路由的功能，网关自动根据注册中心的服务名为每个服务创建一个router，将以服务名开头的请求路径转发到对应的服务
+          enabled: true
+          # lowerCaseServiceId：启动 locator.enabled=true 自动路由时，路由的路径默认会使用大写ID，若想要使用小写ID，可将lowerCaseServiceId设置为true
+          lower-case-service-id: true
+      routes:  #网关路由配置
+        - id: cloudnote-admin  # 路由id，自定义，只要唯一即可
+          uri: lb://192.168.150.128:8088   # 路由的目标地址 lb就是负载均衡，后面跟服务名称；uri: http://127.0.0.1:8081 # 路由的目标地址 http就是固定地址
+#          filters:  # 过滤器
+#            - AddRequestHeader=Truth, I freaking awesome!   # 添加请求头
+          predicates:   # 路由断言，也就是判断请求是否符合路由规则的条件
+            - Path=/cloudnote-admin/**   # 这个是按照路径匹配，只要以/user/开头就符合要求
